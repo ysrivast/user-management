@@ -8,8 +8,9 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
-import com.usermanagement.dto.UserRequest;
+import com.usermanagement.dto.ProfileDTO;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -20,24 +21,30 @@ import lombok.ToString;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(staticName = "of", access = AccessLevel.PRIVATE)
 @ToString
 @EqualsAndHashCode
 @Entity
 @Table(name = "USERS")
-public class User {
+public class Profile {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
 	@GenericGenerator(name = "native", strategy = "native")
 	private Long id;
+	private String userName;
 	private String name;
-	private String contact;
+	private String phone;
+	private String email;
+	private String imageId;
+	private boolean isBankUser;
+	private boolean isBeingUpgraded;
+	private boolean isSecured;
 	
-	public static User of(UserRequest userRequest) {
-		User user =  new User();
+	public static Profile of(ProfileDTO userRequest) {
+		Profile user =  new Profile();
 		user.setName(userRequest.getName());
-		user.setContact(userRequest.getContact());
+		user.setPhone(userRequest.getPhone());
 		return user;
 	}
 }

@@ -1,0 +1,212 @@
+openapi: 3.0.1
+info:
+  title: User profile API
+  description: user-management api for user profile management
+  version: 0.0.1
+servers:
+- url: "http://localhost:8090"
+  description: Generated server url
+paths:
+  /profiles/{userId}/photo:
+    put:
+      tags:
+      - profile
+      summary: Update image for a user
+      description: image will be updated of user
+      operationId: updatePhoto
+      parameters:
+      - name: userId
+        in: path
+        description: userId of the user
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  description: upload image in jpegs format
+                  format: binary
+        required: true
+      Responses:
+        "401":
+          description: token is expired or invalid
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: userId not found
+          content: {}
+        "400":
+          description: Invalid userid supplied
+        "415":
+          description: Image format not supported, please enter jpeg image
+        "200":
+          description: OK
+
+    get:
+      tags:
+      - profile
+      summary: Get image for a user
+      operationId: getPhoto
+      parameters:
+      - name: userId
+        in: path
+        description: userId of the user
+        required: true
+        schema:
+          type: integer
+          format: int64
+      Responses:
+        "401":
+          description: token is expired or invalid
+          $ref: '#/components/responses/UnauthorizedError'
+        "404":
+          description: UserId not found
+          content: {}
+        "400":
+          description: Invalid userid supplied
+        "200":
+          description: Ok.
+          content:
+            image/jpeg:
+
+paths:
+  /profiles/{userId}:
+    put:
+      tags:
+      - profile
+      summary: "Update name, contact and email for a user"
+      operationId: updateProfile
+      parameters:
+      - name: userId
+        in: path
+        description: userId of the user
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Profile"
+        required: true
+      Responses:
+        "401":
+          description: token is expired or invalid
+          $ref: '#/components/responses/UnauthorizedError'
+        "200":
+          description: updated user information
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+        "404":
+          description: UserId not found
+        "400":
+          description: Invalid userid supplied
+    get:
+      tags:
+      - profile
+      summary: "Get user profile by userid"
+      operationId: getProfileByUserId
+      parameters:
+      - name: userId
+        in: path
+        description: userId of the user
+        required: true
+        schema:
+          type: integer
+          format: int64
+      Responses:
+        "401":
+          description: token is expired or invalid
+          $ref: '#/components/responses/UnauthorizedError'
+        "200":
+          description: Get User profile information for given userid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+        "404":
+          description: UserId not found
+        "400":
+          description: Invalid userid supplied
+
+paths:
+  /profiles/{userId}/profile-by-username:
+    get:
+      tags:
+      - profile
+      summary: "Get user profile by userName"
+      operationId: getProfileByUserName
+      parameters:
+      - name: userName
+        in: path
+        description: userId of the user
+        required: true
+        schema:
+          type: string
+      Responses:
+        "401":
+          description: token is expired or invalid
+          $ref: '#/components/responses/UnauthorizedError'
+        "200":
+          description: Get User profile information for given userid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+        "404":
+          description: UserId not found
+        "400":
+          description: Invalid userid supplied
+components:
+  schemas:
+    Profile:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: The unique identifier of this user.
+        userName:
+          type: string
+          description: unique name of user profile
+        name:
+          type: string
+          description: name of user profile
+        phone:
+          pattern: ^[+]*(^$|[0-9])[-\s\./0-9]*$
+          type: string
+          description: phone number of user
+        email:
+          type: string
+          description: unique email of the user profile
+        isBankUser:
+          type: boolean
+          description: flag to differentiate banking user and register user
+        isBeingUpgraded:
+          type: boolean
+          description: flag to check if verification id submitted or not.
+        isSecured:
+          type: boolean
+          description: flag to check if biometric credentials is completed
+        photoLink:
+          type: string
+          description: url to the photo user profile
+      description: Profile contains personal information related to a specific user.
+    UnauthorizedError:
+      description: Access token is missing or invalid  
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+ - bearerAuth: []
+          
